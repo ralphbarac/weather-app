@@ -1,12 +1,12 @@
 window.addEventListener('load', ()=> {
     let long;
     let lat;
-    let timeSectionHour = document.querySelector('.time-section-hour');
-    let timeSectionDate = document.querySelector('.time-section-date');
-    let temperatureDescription = document.querySelector('.temperature-section-summary');
-    let temperatureDegree = document.querySelector('.temperature-section-degree');
-    let locationTimezone = document.querySelector('.temperature-section-location');
-    let temperatureSection = document.querySelector('.temperature-section');
+    const timeSectionHour = document.querySelector('.time-section-hour');
+    const timeSectionDate = document.querySelector('.time-section-date');
+    const temperatureDescription = document.querySelector('.temperature-section-summary');
+    const temperatureDegree = document.querySelector('.temperature-section-degree');
+    const locationTimezone = document.querySelector('.temperature-section-location');
+    const temperatureSection = document.querySelector('.temperature-section');
     const temperatureSpan = document.querySelector('.temperature-section span');
 
     if(navigator.geolocation){
@@ -21,17 +21,18 @@ window.addEventListener('load', ()=> {
                 .then(response =>{
                     return response.json();
                 })
-                .then(data =>{
-                    console.log(data);
-                    const { temperature, summary, icon } = data.currently;
+                .then(info =>{
+                    console.log(info);
+                    const { temperature, summary, icon } = info.currently;
+                    const { data } = info.daily;
                     //Set DOM elements from the API
                     temperatureDegree.textContent = temperature;
                     temperatureDescription.textContent = summary;
-                    locationTimezone.textContent = data.timezone;
+                    locationTimezone.textContent = info.timezone;
                     //Temperature conversion between C/F
-                    let celsius = (temperature - 32) * (5 / 9);
+                    let celsius = convToCelsius(temperature);
                     //Time conversion from UNIX to current date and time
-                    var date = new Date(data.currently.time*1000);
+                    var date = new Date(info.currently.time*1000);
                     var modifier = 'AM'
                     var hours = date.getHours();
                     if(hours > 12){
@@ -45,27 +46,84 @@ window.addEventListener('load', ()=> {
                     //Set DOM elements with time from API
                     timeSectionHour.textContent = formattedTime + modifier
                     timeSectionDate.textContent = formattedDate;
-                    //Set Icon
-                    setIcons(icon, document.querySelector('.icon'));
+                    //Initilize array for weekday section
+                    let today = new Date().getDate();
+                    let tempHigh = [];
+                    for(i = 0; i < 7; i++){
+                        tempHigh.push(info.daily.data[i].temperatureHigh);
+                    }
+                    let weekDayBlocks = Array.from(document.getElementsByClassName('week-section-block'));    
                     //Change Temperature to Celsius/Farenheit
                     temperatureSection.addEventListener('click', () =>{
                         if(temperatureSpan.textContent === "Farenheit"){
                             temperatureSpan.textContent = "Celsius";
-                            temperatureDegree.textContent = Math.floor(celsius);
+                            temperatureDegree.textContent = celsius;
+                            for(i = 0; i < 7; i++){
+                                weekDayBlocks[i].getElementsByClassName('temp-high')[0].textContent = convToCelsius(tempHigh[i]);
+                            }
                         }
                         else{
                             temperatureSpan.textContent = "Farenheit";
                             temperatureDegree.textContent = temperature;
+                            for (i = 0; i < 7; i++){
+                                weekDayBlocks[i].getElementsByClassName('temp-high')[0].textContent = tempHigh[i];
+                            }
                         }
                     });
+                
+                    //Set the date, temperature high, and icon in each weekday box 
+                    weekArray = getWeekArray();               
+                   for(i = 0; i < 7; i++){
+                       weekDayBlocks[i].getElementsByClassName('title')[0].textContent = weekArray[i] ;
+                       weekDayBlocks[i].getElementsByClassName('temp-high')[0].textContent = Math.floor(tempHigh[i]);
+                       var skycons = new Skycons({"color": "white"});
+                       skycons.add(weekDayBlocks[i].getElementsByClassName('icon')[0], info.daily.data[i].icon.replace(/-/g, "_").toUpperCase());
+                       skycons.play();
+
+                    }
+                    weekDayBlocks[0].getElementsByClassName('title')[0].textContent = "TODAY";
+                    skycons.add(document.getElementsByClassName('icon-0')[0], icon.replace(/-/g, "_").toUpperCase());
+
                 });
         });
     }
 
-    function setIcons(icon, iconID){
-        const skycons = new Skycons({color: "white"});
-        const currentIcon = icon.replace(/-/g, "_").toUpperCase();
-        skycons.play();
-        return skycons.set(iconID, Skycons[currentIcon]);
+    function convToCelsius(temperature){
+        celsiusTemp = (temperature - 32) * (5/9);
+        return Math.floor(celsiusTemp);
+    }
+
+    //Get list of days and create array
+    function getWeekArray(){
+        date = new Date().getDay();
+        weekArray = [];
+        for(i = 0; i < 7; i++){
+            curr = (date + i) % 7;
+            switch(curr){
+                case 0:
+                    day = "SUN";
+                    break;
+                case 1:
+                    day = "MON";
+                    break;
+                case 2:
+                    day = "TUE";
+                    break;
+                case 3:
+                    day = "WED";
+                    break;
+                case 4:
+                    day = "THU";
+                    break;
+                case 5:
+                    day = "FRI";
+                    break;
+                case 6: 
+                    day = "SAT";
+                    break;
+            }
+            weekArray.push(day);
+        }
+        return weekArray;
     }
 });

@@ -1,7 +1,8 @@
 window.addEventListener('load', ()=> {
     let long;
     let lat;
-    const timeSectionHour = document.querySelector('.time-section-hour');
+    const timeSectionHour = document.querySelector('.hour');
+    const timeSectionModifier = document.querySelector('.modifier');
     const timeSectionDate = document.querySelector('.time-section-date');
     const temperatureDescription = document.querySelector('.temperature-section-summary');
     const temperatureDegree = document.querySelector('.temperature-section-degree');
@@ -26,7 +27,7 @@ window.addEventListener('load', ()=> {
                     const { temperature, summary, icon } = info.currently;
                     const { data } = info.daily;
                     //Set DOM elements from the API
-                    temperatureDegree.textContent = temperature;
+                    temperatureDegree.textContent = Math.floor(temperature) + "°";
                     temperatureDescription.textContent = summary;
                     locationTimezone.textContent = info.timezone;
                     //Temperature conversion between C/F
@@ -41,13 +42,7 @@ window.addEventListener('load', ()=> {
                     }
                     var minutes = "0" + date.getMinutes();
                     var formattedTime = hours + ':' + minutes.substr(-2);
-                    var formattedDate = date.getDate() + '/' + (date.getMonth()+1) + '/' + date.getFullYear();
-                    console.log(formattedTime + modifier);
-                    //Set DOM elements with time from API
-                    timeSectionHour.textContent = formattedTime + modifier
-                    timeSectionDate.textContent = formattedDate;
                     //Initilize array for weekday section
-                    let today = new Date().getDate();
                     let tempHigh = [];
                     for(i = 0; i < 7; i++){
                         tempHigh.push(info.daily.data[i].temperatureHigh);
@@ -57,16 +52,16 @@ window.addEventListener('load', ()=> {
                     temperatureSection.addEventListener('click', () =>{
                         if(temperatureSpan.textContent === "Farenheit"){
                             temperatureSpan.textContent = "Celsius";
-                            temperatureDegree.textContent = celsius;
+                            temperatureDegree.textContent = celsius + "°";
                             for(i = 0; i < 7; i++){
                                 weekDayBlocks[i].getElementsByClassName('temp-high')[0].textContent = convToCelsius(tempHigh[i]);
                             }
                         }
                         else{
                             temperatureSpan.textContent = "Farenheit";
-                            temperatureDegree.textContent = temperature;
+                            temperatureDegree.textContent = Math.floor(temperature) + "°";
                             for (i = 0; i < 7; i++){
-                                weekDayBlocks[i].getElementsByClassName('temp-high')[0].textContent = tempHigh[i];
+                                weekDayBlocks[i].getElementsByClassName('temp-high')[0].textContent = Math.floor(tempHigh[i]);
                             }
                         }
                     });
@@ -74,7 +69,7 @@ window.addEventListener('load', ()=> {
                     //Set the date, temperature high, and icon in each weekday box 
                     weekArray = getWeekArray();               
                    for(i = 0; i < 7; i++){
-                       weekDayBlocks[i].getElementsByClassName('title')[0].textContent = weekArray[i] ;
+                       weekDayBlocks[i].getElementsByClassName('title')[0].textContent = weekArray[i].substr(0,3);
                        weekDayBlocks[i].getElementsByClassName('temp-high')[0].textContent = Math.floor(tempHigh[i]);
                        var skycons = new Skycons({"color": "white"});
                        skycons.add(weekDayBlocks[i].getElementsByClassName('icon')[0], info.daily.data[i].icon.replace(/-/g, "_").toUpperCase());
@@ -83,6 +78,11 @@ window.addEventListener('load', ()=> {
                     }
                     weekDayBlocks[0].getElementsByClassName('title')[0].textContent = "TODAY";
                     skycons.add(document.getElementsByClassName('icon-0')[0], icon.replace(/-/g, "_").toUpperCase());
+
+                    //Set DOM elements with time from API
+                    timeSectionHour.textContent = formattedTime;
+                    timeSectionModifier.textContent = modifier;
+                    timeSectionDate.textContent = weekArray[0].toLowerCase().charAt(0).toUpperCase()+weekArray[0].substr(1).toLowerCase() + "," + " " + date.getDate() + " " + getMonth() + " " + date.getFullYear();
 
                 });
         });
@@ -101,29 +101,72 @@ window.addEventListener('load', ()=> {
             curr = (date + i) % 7;
             switch(curr){
                 case 0:
-                    day = "SUN";
+                    day = "SUNDAY";
                     break;
                 case 1:
-                    day = "MON";
+                    day = "MONDAY";
                     break;
                 case 2:
-                    day = "TUE";
+                    day = "TUESDAY";
                     break;
                 case 3:
-                    day = "WED";
+                    day = "WEDNESDAY";
                     break;
                 case 4:
-                    day = "THU";
+                    day = "THURSDAY";
                     break;
                 case 5:
-                    day = "FRI";
+                    day = "FRIDAY";
                     break;
                 case 6: 
-                    day = "SAT";
+                    day = "SATURDAY";
                     break;
             }
             weekArray.push(day);
         }
         return weekArray;
+    }
+
+    function getMonth(){
+        month = new Date().getMonth();
+       switch(month){
+           case 0:
+                month = "January";
+                break;
+           case 1:
+                month = "February";
+                break;
+           case 2:
+                month = "March";
+                break;
+           case 3:
+                month = "April";
+                break;
+           case 4:
+                month = "May";
+                break;
+           case 5:
+                month = "June";
+                break;
+           case 6:
+                month = "July";
+                break;
+           case 7:
+                month = "August";
+                break;
+           case 8:
+                month = "September";
+                break;
+           case 9:
+                month = "October";
+                break;
+           case 10:
+                month = "November";
+                break;
+           case 11:
+                month = "December";
+                break;
+       }
+       return month;
     }
 });

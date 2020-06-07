@@ -19,6 +19,7 @@ body {
     flex-direction: column;
     padding-top: 5rem;
     padding-left: 10rem;
+    width: 30%
 }
 
 .time-section-hour {
@@ -49,6 +50,7 @@ body {
     padding-top: 5rem;
     padding-right: 10rem;
     text-align: right;
+    width: 30%
 }
 
 .temperature-section-summary {
@@ -80,11 +82,12 @@ body {
     display: flex;
     justify-content: center;
     flex-direction: column;
-    max-width: 60%;
+    width: 40%;
     text-align: center;
 }
 
 .overview-paragraph {
+    margin: 0 auto;
     font-size: 3rem;
     max-width: 80%;
 }

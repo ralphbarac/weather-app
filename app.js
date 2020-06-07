@@ -9,6 +9,7 @@ window.addEventListener('load', ()=> {
     const locationTimezone = document.querySelector('.temperature-section-location');
     const temperatureSection = document.querySelector('.temperature-section');
     const temperatureSpan = document.querySelector('.temperature-section span');
+    const overviewParagraph = document.querySelector('.overview-paragraph');
 
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(position =>{
@@ -23,25 +24,26 @@ window.addEventListener('load', ()=> {
                     return response.json();
                 })
                 .then(info =>{
-                    console.log(info);
                     const { temperature, summary, icon } = info.currently;
-                    const { data } = info.daily;
+                    const minutely_summary = info.minutely.summary
+                    const daily_summary = info.daily.summary
                     //Set DOM elements from the API
                     temperatureDegree.textContent = Math.floor(temperature) + "°";
                     temperatureDescription.textContent = summary;
                     locationTimezone.textContent = info.timezone;
+                    overviewParagraph.textContent = minutely_summary + " " + daily_summary;
                     //Temperature conversion between C/F
                     let celsius = convToCelsius(temperature);
                     //Time conversion from UNIX to current date and time
-                    var date = new Date(info.currently.time*1000);
-                    var modifier = 'AM'
-                    var hours = date.getHours();
+                    let date = new Date(info.currently.time*1000);
+                    let modifier = 'AM'
+                    let hours = date.getHours();
                     if(hours > 12){
                         hours = hours - 12;
                         modifier = 'PM'
                     }
-                    var minutes = "0" + date.getMinutes();
-                    var formattedTime = hours + ':' + minutes.substr(-2);
+                    let minutes = "0" + date.getMinutes();
+                    let formattedTime = hours + ':' + minutes.substr(-2);
                     //Initilize array for weekday section
                     let tempHigh = [];
                     for(i = 0; i < 7; i++){
@@ -49,7 +51,7 @@ window.addEventListener('load', ()=> {
                     }
                     let weekDayBlocks = Array.from(document.getElementsByClassName('week-section-block'));    
                     //Change Temperature to Celsius/Farenheit
-                    temperatureSection.addEventListener('click', () =>{
+                    temperatureDegree.addEventListener('click', () =>{
                         if(temperatureSpan.textContent === "Farenheit"){
                             temperatureSpan.textContent = "Celsius";
                             temperatureDegree.textContent = celsius + "°";
@@ -71,7 +73,7 @@ window.addEventListener('load', ()=> {
                    for(i = 0; i < 7; i++){
                        weekDayBlocks[i].getElementsByClassName('title')[0].textContent = weekArray[i].substr(0,3);
                        weekDayBlocks[i].getElementsByClassName('temp-high')[0].textContent = Math.floor(tempHigh[i]);
-                       var skycons = new Skycons({"color": "white"});
+                       let skycons = new Skycons({"color": "white"});
                        skycons.add(weekDayBlocks[i].getElementsByClassName('icon')[0], info.daily.data[i].icon.replace(/-/g, "_").toUpperCase());
                        skycons.play();
 

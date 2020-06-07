@@ -19,8 +19,6 @@ body {
     flex-direction: column;
     padding-top: 5rem;
     padding-left: 10rem;
-    justify-self: left;
-    width: 100%;
 }
 
 .time-section-hour {
@@ -47,12 +45,10 @@ body {
 
 .temperature-section {
     display: flex;
-    align-items: flex-end;
     flex-direction: column;
     padding-top: 5rem;
     padding-right: 10rem;
-    justify-self: right;
-    width: 100%;
+    text-align: right;
 }
 
 .temperature-section-summary {
@@ -65,7 +61,11 @@ body {
     color: rgba(142,120,255,1);
 }
 
-.temperature-section span{
+.temperature-section-degree{
+    cursor: pointer;
+}
+
+.temperature-section-degree span{
     cursor: pointer;
 }
 
@@ -73,12 +73,27 @@ body {
     display: flex;
     height: 50vh;
     width: 100vw;
+    justify-content: space-between;
+}
+
+.summary {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    max-width: 60%;
+    text-align: center;
+}
+
+.overview-paragraph {
+    font-size: 3rem;
+    max-width: 80%;
 }
 
 .section-lower {
     display: flex;
     height: 50vh;
-    width: 80 vw;
+    margin: 0 auto;
+    width: 80vw;
     justify-content: center;
     align-items: center;
 }

@@ -53,6 +53,14 @@ body {
     width: 30%
 }
 
+.icon-0 {
+    display: flex;
+    align-self: flex-end;
+    width: 100px;
+    height: 100px;
+}
+
+
 .temperature-section-summary {
     font-size: 2.3rem;
     letter-spacing: .1rem;

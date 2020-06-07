@@ -73,7 +73,7 @@ window.addEventListener('load', ()=> {
                    for(i = 0; i < 7; i++){
                        weekDayBlocks[i].getElementsByClassName('title')[0].textContent = weekArray[i].substr(0,3);
                        weekDayBlocks[i].getElementsByClassName('temp-high')[0].textContent = Math.floor(tempHigh[i]);
-                       let skycons = new Skycons({"color": "white"});
+                       var skycons = new Skycons({"color": "white"});
                        skycons.add(weekDayBlocks[i].getElementsByClassName('icon')[0], info.daily.data[i].icon.replace(/-/g, "_").toUpperCase());
                        skycons.play();
 
